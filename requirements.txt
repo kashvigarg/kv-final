@@ -1,0 +1,15 @@
+asgiref
+django
+django-cors-headers
+django-rest-framework
+djangorestframework
+gunicorn
+numpy
+pandas
+python-dateutil
+pytz
+six
+sqlparse
+tzdata
+waitress
+whitenoise
