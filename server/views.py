@@ -8,6 +8,7 @@ from pyod.models.iforest import IForest
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import timedelta 
 from server.serializers import UploadSerializer
+from server.models import File
 
 class UploadCSV(generics.CreateAPIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -20,6 +21,7 @@ class UploadCSV(generics.CreateAPIView):
         if serializer.is_valid():
             
             file = serializer.validated_data['file']
+            serializer.save()
             df = pd.read_csv(file, delimiter=';')
             df = df[['trans_id', 'date', 'account_id', 'type', 'amount']]
             df['date'] = pd.to_datetime(df['date'], format='%y%m%d')
@@ -49,7 +51,6 @@ class UploadCSV(generics.CreateAPIView):
             context = {
              'data': jsrec,
             }
-            
             
             return Response(context, status=status.HTTP_200_OK)
         else:
