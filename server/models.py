@@ -2,5 +2,7 @@ from django.db import models
 
 # Create your models here.
 class File(models.Model):
-    id = models.CharField(primary_key=True, max_length=6)
-    name = models.CharField(max_length=100)
+    file = models.FileField(blank=False, null=False)
+
+    class Meta:
+        verbose_name_plural = 'Files'
