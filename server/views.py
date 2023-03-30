@@ -16,7 +16,7 @@ class UploadCSV(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs): 
         serializer = UploadSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        #serializer.is_valid(raise_exception=True)
         
         if serializer.is_valid():
             
