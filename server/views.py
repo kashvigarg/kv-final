@@ -21,8 +21,11 @@ class UploadCSV(generics.CreateAPIView):
         if serializer.is_valid():
             
             file = serializer.validated_data['file']
-            serializer.save()
-            df = pd.read_csv(file, delimiter=';')
+            fs = FileSystemStorage()
+            file2 = fs.save(file.name, file)
+            fileurl = fs.url(file2)
+            url = "."+fileurl
+            df = pd.read_csv(url, delimiter=';')
             df = df[['trans_id', 'date', 'account_id', 'type', 'amount']]
             df['date'] = pd.to_datetime(df['date'], format='%y%m%d')
             df.replace(to_replace='PRIJEM', value = 'Credit', inplace= True)
@@ -52,6 +55,7 @@ class UploadCSV(generics.CreateAPIView):
              'data': jsrec,
             }
             
+            fs.delete(file2)
             return Response(context, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
