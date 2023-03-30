@@ -25,7 +25,7 @@ class UploadCSV(generics.CreateAPIView):
             file2 = fs.save(file.name, file)
             fileurl = fs.url(file2)
             url = "."+fileurl
-            df = pd.read_csv(url, delimiter=';')
+            df = pd.read_csv(url, delimiter=';', low_memory=False)
             df = df[['trans_id', 'date', 'account_id', 'type', 'amount']]
             df['date'] = pd.to_datetime(df['date'], format='%y%m%d')
             df.replace(to_replace='PRIJEM', value = 'Credit', inplace= True)
@@ -58,4 +58,4 @@ class UploadCSV(generics.CreateAPIView):
             fs.delete(file2)
             return Response(context, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
