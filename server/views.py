@@ -1,8 +1,8 @@
 from rest_framework.response import Response
-from rest_framework.views import APIView
 import rest_framework.status as status
 from rest_framework import generics
 import pandas as pd
+from django.core.files.storage import FileSystemStorage
 import seaborn as sns
 from pyod.models.iforest import IForest
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -18,7 +18,7 @@ class UploadCSV(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         
         if serializer.is_valid():
-            serializer.save()
+            
             file = serializer.validated_data['file']
             df = pd.read_csv(file, delimiter=';')
             df = df[['trans_id', 'date', 'account_id', 'type', 'amount']]
@@ -49,6 +49,7 @@ class UploadCSV(generics.CreateAPIView):
             context = {
              'data': jsrec,
             }
+            
             
             return Response(context, status=status.HTTP_200_OK)
         else:
