@@ -1,5 +1,8 @@
 asgiref
 django
+seaborn
+datetime
+pyod
 django-cors-headers
 django-rest-framework
 djangorestframework
