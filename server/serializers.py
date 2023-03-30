@@ -2,7 +2,9 @@ from rest_framework import serializers
 from . import models
 from server.models import File
 
-class UploadSerializer(serializers.Serializer):
+class UploadSerializer(serializers.ModelSerializer):
+    file = serializers.FileField()
+
     class Meta:
         model = File
-        fields = {'file'}
+        fields = "__all__"

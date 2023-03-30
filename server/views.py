@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import rest_framework.status as status
+from rest_framework import generics
 import pandas as pd
 import seaborn as sns
 from pyod.models.iforest import IForest
@@ -8,15 +9,17 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import timedelta 
 from server.serializers import UploadSerializer
 
-class UploadCSV(APIView):
+class UploadCSV(generics.CreateAPIView):
     parser_classes = (MultiPartParser, FormParser)
+    serializer_class = UploadSerializer
 
     def post(self, request, *args, **kwargs): 
         serializer = UploadSerializer(data=request.data)
-
+        serializer.is_valid(raise_exception=True)
+        
         if serializer.is_valid():
             serializer.save()
-            file = serializer.data
+            file = serializer.validated_data['file']
             df = pd.read_csv(file, delimiter=';')
             df = df[['trans_id', 'date', 'account_id', 'type', 'amount']]
             df['date'] = pd.to_datetime(df['date'], format='%y%m%d')
@@ -30,8 +33,8 @@ class UploadCSV(APIView):
             df_W['freq_5days'] = df_W.groupby('account_id')['amount'].transform(lambda s: s.rolling(timedelta(days=5)).count())
 
 
-            sns.displot(df_W['sum_5days'], bins=50)
-            sns.countplot(x='freq_5days', data=df_W)
+            # sns.displot(df_W['sum_5days'], bins=50)
+            # sns.countplot(x='freq_5days', data=df_W)
 
             model = IForest(contamination= 0.001)
             X = df_W[['freq_5days', 'sum_5days']]
@@ -41,7 +44,7 @@ class UploadCSV(APIView):
             df_W['score'] = model.decision_scores_
             
             flagged = df_W.query('pred == 1')
-            f_flagged = df[['trans_id', 'pred', 'score']]
+            f_flagged = flagged[['trans_id', 'pred', 'score']]
             jsrec = f_flagged.to_json(orient ='records')
             context = {
              'data': jsrec,
