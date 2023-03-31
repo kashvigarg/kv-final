@@ -1,3 +1,4 @@
+import json
 from rest_framework.response import Response
 import rest_framework.status as status
 from rest_framework import generics
@@ -51,8 +52,9 @@ class UploadCSV(generics.CreateAPIView):
             flagged = df_W.query('pred == 1')
             f_flagged = flagged[['trans_id', 'pred', 'score']]
             jsrec = f_flagged.to_json(orient ='records')
+            p = json.loads(jsrec)
             context = {
-             'data': jsrec,
+             'data': p,
             }
             
             fs.delete(file2)
