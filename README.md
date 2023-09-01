@@ -31,6 +31,7 @@ Install project dependencies:
     
 Then simply apply the migrations:
 
+    $ python manage.py makemigrations
     $ python manage.py migrate
     
 
